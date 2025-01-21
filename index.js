@@ -1,4 +1,5 @@
 require("dotenv").config();
+const dns = require('dns');
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -23,19 +24,29 @@ app.get("/api/hello", function (req, res) {
 
 let urlDatabase = [];
 let urlDatabaseIndex = 0;
+
 app.post("/api/shorturl", function (req, res) {
   let originalUrl = req.body.url;
+
+  if (!originalUrl) {
+    return res.status(400).json({ error: 'Debes proporcionar un dominio.' });
+  }
+
   originalUrl = ensureFullUrl(originalUrl);
 
   if (!isValidUrl(originalUrl)) {
     return res.status(400).json({ error: "Invalid URL" });
   }
-  console.log(originalUrl);
+
+  console.log("url ok: "+originalUrl);
+
   let shortUrl = urlDatabaseIndex;
   urlDatabase.push({ originalUrl, shortUrl });
   urlDatabaseIndex++;
+
   console.log(urlDatabase);
   console.log(typeof urlDatabase.toString());
+
   res.json({ originalUrl, shortUrl });
 });
 
@@ -50,7 +61,9 @@ app.get("/api/shorturl/:shortUrl", function (req, res) {
 
   if (originalUrl) {
     res.redirect(originalUrl);
+
     console.log("Redirecting to " + originalUrl);
+
   } else {
     res.status(404).json({ error: "No URL found for the given shortUrl" });
   }
@@ -77,5 +90,16 @@ function isValidUrl(url) {
       "(\\#[-a-z\\d_]*)?$",
     "i"
   ); // fragmento
-  return !!urlPattern.test(url);
+  if (!!urlPattern.test(url)){
+  dns.lookup(url, (err, address) => {
+    if (err) {
+      // return res.status(404).json({ error: `No se pudo resolver el dominio: ${err.message}` });
+      return false;
+    }
+    // res.json({ dominio, address });
+    if (address){
+      return true;
+    }
+  });
+  }
 }
