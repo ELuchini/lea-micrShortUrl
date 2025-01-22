@@ -36,19 +36,19 @@ app.post("/api/shorturl", function (req, res) {
   console.log("url: " + original_Url);
 
   if (!isValidUrl(original_Url)) {
-    return res.status(400).json({ error: "invalid url" });
+    return res.json({ error: "invalid url" });
   }
 
   console.log("url ok: " + original_Url);
 
-  let short_Url = urlDatabaseIndex;
+  let short_Url = urlDatabaseIndex.toString();
   urlDatabase.push({ originalUrl: original_Url, shortUrl: short_Url });
   urlDatabaseIndex++;
 
   console.log(urlDatabase);
   console.log(typeof urlDatabase.toString());
 
-  res.json({ original_Url: original_Url, short_Url: short_Url });
+  res.json({ original_url: original_Url, short_url: short_Url });
 });
 
 app.get("/api/shorturl/:shortUrl", function (req, res) {
