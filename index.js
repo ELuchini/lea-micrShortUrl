@@ -26,30 +26,29 @@ let urlDatabase = [];
 let urlDatabaseIndex = 0;
 
 app.post("/api/shorturl", function (req, res) {
-  let originalUrl = req.body.url;
+  let original_Url = req.body.url;
 
-  if (!originalUrl) {
+  if (!original_Url) {
     return res.status(400).json({ error: "Debes proporcionar un dominio." });
   }
 
-  originalUrl = ensureFullUrl(originalUrl);
-  console.log("url: " + originalUrl);
+  original_Url = ensureFullUrl(original_Url);
+  console.log("url: " + original_Url);
 
-  if (!isValidUrl(originalUrl)) {
-    return res.status(400).json({ error: "URL Invalida" });
+  if (!isValidUrl(original_Url)) {
+    return res.status(400).json({ error: "invalid url" });
   }
 
+  console.log("url ok: " + original_Url);
 
-  console.log("url ok: " + originalUrl);
-
-  let shortUrl = urlDatabaseIndex;
-  urlDatabase.push({ originalUrl, shortUrl });
+  let short_Url = urlDatabaseIndex;
+  urlDatabase.push({ originalUrl: original_Url, shortUrl: short_Url });
   urlDatabaseIndex++;
 
   console.log(urlDatabase);
   console.log(typeof urlDatabase.toString());
 
-  res.json({ originalUrl, shortUrl });
+  res.json({ original_Url: original_Url, short_Url: short_Url });
 });
 
 app.get("/api/shorturl/:shortUrl", function (req, res) {
