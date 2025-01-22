@@ -33,20 +33,15 @@ app.post("/api/shorturl", function (req, res) {
   }
 
   original_Url = ensureFullUrl(original_Url);
-  console.log("url: " + original_Url);
 
   if (!isValidUrl(original_Url)) {
     return res.json({ error: "invalid url" });
   }
 
-  console.log("url ok: " + original_Url);
-
   let short_Url = urlDatabaseIndex.toString();
+
   urlDatabase.push({ originalUrl: original_Url, shortUrl: short_Url });
   urlDatabaseIndex++;
-
-  console.log(urlDatabase);
-  console.log(typeof urlDatabase.toString());
 
   res.json({ original_url: original_Url, short_url: short_Url });
 });
@@ -56,14 +51,8 @@ app.get("/api/shorturl/:shortUrl", function (req, res) {
   let urlObject = urlDatabase.find((url) => url.shortUrl == shortUrl);
   let originalUrl = urlObject ? urlObject.originalUrl : null;
 
-  console.log("shortUrl= " + shortUrl);
-  console.log("urlOb= " + urlObject);
-  console.log("originalUrl= " + originalUrl);
-
   if (originalUrl) {
     res.redirect(originalUrl);
-
-    console.log("Redirecting to " + originalUrl);
   } else {
     res.status(404).json({ error: "No URL found for the given shortUrl" });
   }
@@ -90,6 +79,5 @@ function isValidUrl(url) {
       "(\\#[-a-z\\d_]*)?$",
     "i"
   ); // fragmento
-
   return !!urlPattern.test(url);
 }
